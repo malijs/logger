@@ -1,6 +1,9 @@
 
 # mali-logger
 
+[![npm version](https://img.shields.io/npm/v/mali-logger.svg?style=flat-square)](https://www.npmjs.com/package/mali-logger)
+[![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)](https://travis-ci.org/malijs/logger)
+
 Development style logger middleware for [Mali](https://github.com/malijs/mali).
 
 ```
@@ -45,4 +48,4 @@ to "wrap" all subsequent middleware.
 
 ## License
 
-MIT
+Apache 2.0
