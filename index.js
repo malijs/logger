@@ -42,8 +42,6 @@ module.exports = function dev (options) {
         log(ctx, start, null, event)
       }
     }, (err) => {
-      console.log('!ERROR')
-      console.dir(err)
       log(ctx, start, err)
       throw err
     })
