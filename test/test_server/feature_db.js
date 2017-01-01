@@ -23,6 +23,11 @@ async function checkFeature (point) {
   return new Promise((resolve, reject) => {
     const input = fs.createReadStream(dbfile)
 
+    // our fake error point
+    if (point.latitude === 333333 && point.longitude === 333333) {
+      return reject(new Error('Error checking feature'))
+    }
+
     hl(input)
       .through(JSONStream.parse('*'))
       .find(feature =>

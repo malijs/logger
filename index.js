@@ -51,7 +51,7 @@ module.exports = function dev (options) {
 function log (ctx, start, err, event) {
   const color = err ? 'red' : 'green'
 
-  const upstream = err ? chalk.red('xxx')
+  const upstream = err ? chalk.red('<--')
     : event === 'close' ? chalk.yellow('-x-')
     : chalk.gray('<--')
 

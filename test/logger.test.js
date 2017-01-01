@@ -76,6 +76,30 @@ test.serial('should log a simple request with correct function and type of unary
     sinon.match.any))
 })
 
+test.serial('should log an errorous request with correct function and type of unary', async t => {
+  t.plan(4)
+  const point1 = {
+    latitude: 333333,
+    longitude: 333333
+  }
+
+  await t.throws(client.getFeature(point1))
+  t.true(log.calledTwice)
+  t.true(log.calledWith('  ' + chalk.gray('-->') +
+    ' ' + chalk.bold('%s') +
+    ' ' + chalk.gray('%s'),
+    'GetFeature',
+    'unary'))
+
+  t.true(log.calledWith('  ' + chalk.red('<--') +
+    ' ' + chalk.bold('%s') +
+    ' ' + chalk.gray('%s') +
+    ' ' + chalk.red('%s'),
+    'GetFeature',
+    'unary',
+    sinon.match.any))
+})
+
 test.serial('should log request with correct function and type of response_stream', async t => {
   t.plan(4)
   const rectangle = {
