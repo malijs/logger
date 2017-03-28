@@ -18,7 +18,7 @@ module.exports = function dev (options) {
     console.log('  ' + chalk.gray('-->') +
       ' ' + chalk.bold('%s') +
       ' ' + chalk.gray('%s'),
-      ctx.name,
+      ctx.fullName || ctx.name,
       ctx.type)
 
     return next().then(() => {
@@ -59,7 +59,7 @@ function log (ctx, start, err, event) {
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk[color]('%s'),
-    ctx.name,
+    ctx.fullName || ctx.name,
     ctx.type,
     time(start))
 }

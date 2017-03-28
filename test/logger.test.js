@@ -64,14 +64,14 @@ test.serial('should log a simple request with correct function and type of unary
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    'GetFeature',
+    '/routeguide.RouteGuide/GetFeature',
     'unary'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
-    'GetFeature',
+    '/routeguide.RouteGuide/GetFeature',
     'unary',
     sinon.match.any))
 })
@@ -88,14 +88,14 @@ test.serial('should log an errorous request with correct function and type of un
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    'GetFeature',
+    '/routeguide.RouteGuide/GetFeature',
     'unary'))
 
   t.true(log.calledWith('  ' + chalk.red('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.red('%s'),
-    'GetFeature',
+    '/routeguide.RouteGuide/GetFeature',
     'unary',
     sinon.match.any))
 })
@@ -121,70 +121,16 @@ test.serial('should log request with correct function and type of response_strea
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    'ListFeatures',
+    '/routeguide.RouteGuide/ListFeatures',
     'response_stream'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
-    'ListFeatures',
+    '/routeguide.RouteGuide/ListFeatures',
     'response_stream',
     sinon.match.any))
-})
-
-test.serial.cb('should log request with correct function and type of request_stream', t => {
-  fs.readFile(path.resolve(__dirname, './test_server/route_guide_db.json'), (err, data) => {
-    t.ifError(err)
-    const featureList = JSON.parse(data)
-    const npoints = 10
-    const call = client.recordRoute((err, stats) => {
-      t.ifError(err)
-    })
-
-    function pointSender (lat, lng) {
-      return function (callback) {
-        call.write({
-          latitude: lat,
-          longitude: lng
-        })
-        _.delay(callback, _.random(500, 1500))
-      }
-    }
-
-    const pointSenders = []
-    for (let i = 0; i < npoints; i++) {
-      let randPoint = featureList[_.random(0, featureList.length - 1)]
-      pointSenders[i] = pointSender(randPoint.location.latitude,
-        randPoint.location.longitude)
-    }
-
-    call.on('finish', () => {
-      process.nextTick(() => {
-        t.true(log.calledWith('  ' + chalk.gray('-->') +
-          ' ' + chalk.bold('%s') +
-          ' ' + chalk.gray('%s'),
-          'RecordRoute',
-          'request_stream'))
-
-        // TODO this fails for some reason even though we see it
-        // t.true(log.calledTwice)
-        // t.true(log.calledWith('  ' + chalk.gray('<--') +
-        //     ' ' + chalk.bold('%s') +
-        //     ' ' + chalk.gray('%s') +
-        //     ' ' + chalk.green('%s'),
-        //     'recordRoute',
-        //     'request_stream',
-        //     sinon.match.any))
-
-        t.end()
-      })
-    })
-
-    async.series(pointSenders, () => {
-      call.end()
-    })
-  })
 })
 
 test.serial.cb('should log request with correct function and type of duplex', t => {
@@ -192,20 +138,21 @@ test.serial.cb('should log request with correct function and type of duplex', t 
   t.truthy(call)
   call.on('data', _.noop)
   call.on('end', () => {
-    t.true(log.calledTwice)
     t.true(log.calledWith('  ' + chalk.gray('-->') +
       ' ' + chalk.bold('%s') +
       ' ' + chalk.gray('%s'),
-      'RouteChat',
+      '/routeguide.RouteGuide/RouteChat',
       'duplex'))
 
     t.true(log.calledWith('  ' + chalk.gray('<--') +
       ' ' + chalk.bold('%s') +
       ' ' + chalk.gray('%s') +
       ' ' + chalk.green('%s'),
-      'RouteChat',
+      '/routeguide.RouteGuide/RouteChat',
       'duplex',
       sinon.match.any))
+
+    t.true(log.calledTwice)
 
     t.end()
   })
@@ -240,6 +187,60 @@ test.serial.cb('should log request with correct function and type of duplex', t 
     call.write(note)
   }
   call.end()
+})
+
+test.serial.cb('should log request with correct function and type of request_stream', t => {
+  fs.readFile(path.resolve(__dirname, './test_server/route_guide_db.json'), (err, data) => {
+    t.ifError(err)
+    const featureList = JSON.parse(data)
+    const npoints = 10
+    const call = client.recordRoute((err, stats) => {
+      t.ifError(err)
+    })
+
+    function pointSender (lat, lng) {
+      return function (callback) {
+        call.write({
+          latitude: lat,
+          longitude: lng
+        })
+        _.delay(callback, _.random(500, 1500))
+      }
+    }
+
+    const pointSenders = []
+    for (let i = 0; i < npoints; i++) {
+      let randPoint = featureList[_.random(0, featureList.length - 1)]
+      pointSenders[i] = pointSender(randPoint.location.latitude,
+        randPoint.location.longitude)
+    }
+
+    call.on('finish', () => {
+      process.nextTick(() => {
+        t.true(log.calledWith('  ' + chalk.gray('-->') +
+          ' ' + chalk.bold('%s') +
+          ' ' + chalk.gray('%s'),
+          '/routeguide.RouteGuide/RecordRoute',
+          'request_stream'))
+
+        // TODO this fails for some reason even though we see it
+        // t.true(log.calledTwice)
+        // t.true(log.calledWith('  ' + chalk.gray('<--') +
+        //     ' ' + chalk.bold('%s') +
+        //     ' ' + chalk.gray('%s') +
+        //     ' ' + chalk.green('%s'),
+        //     'recordRoute',
+        //     'request_stream',
+        //     sinon.match.any))
+
+        t.end()
+      })
+    })
+
+    async.series(pointSenders, () => {
+      call.end()
+    })
+  })
 })
 
 test.after.always('guaranteed cleanup', async t => {
