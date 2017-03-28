@@ -1,6 +1,6 @@
 {
   "name": "mali-logger",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Development logging middleware for Mali",
   "main": "index.js",
   "repository": {
