@@ -172,12 +172,13 @@ async function routeChat (ctx) {
 }
 
 let app = new Mali(PROTO_PATH, 'RouteGuide')
-app.use(logger())
+let log = logger()
+let log2 = logger({fullName: true})
 app.use({
-  getFeature,
-  listFeatures,
-  recordRoute,
-  routeChat
+  getFeature: [log, getFeature],
+  listFeatures: [log, listFeatures],
+  recordRoute: [log, recordRoute],
+  routeChat: [log2, routeChat]
 })
 
 module.exports = app

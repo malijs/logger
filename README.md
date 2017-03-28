@@ -6,17 +6,17 @@
 
 Development style logger middleware for [Mali](https://github.com/malijs/mali).
 
-```
---> /routeguide.RouteGuide/GetFeature unary
---> /routeguide.RouteGuide/GetFeature unary
-<-- /routeguide.RouteGuide/GetFeature unary 22ms
-<-- /routeguide.RouteGuide/GetFeature unary 32ms
---> /routeguide.RouteGuide/ListFeatures response_stream
-<-- /routeguide.RouteGuide/ListFeatures response_stream 21ms
---> /routeguide.RouteGuide/RecordRoute request_stream
-<-- /routeguide.RouteGuide/RecordRoute request_stream 10s
---> /routeguide.RouteGuide/RouteChat duplex
-<-- /routeguide.RouteGuide/RouteChat duplex 10ms
+```sh
+--> GetFeature unary
+--> GetFeature unary
+<-- GetFeature unary 22ms
+<-- GetFeature unary 32ms
+--> ListFeatures response_stream
+<-- ListFeatures response_stream 21ms
+--> RecordRoute request_stream
+<-- RecordRoute request_stream 10s
+--> RouteChat duplex
+<-- RouteChat duplex 10ms
 ```
 
 ## Installation
@@ -39,6 +39,25 @@ const app = new Mali(path.resolve(__dirname, './helloworld.proto'), 'Greeter')
 app.use(logger())
 app.use({ sayHello })
 app.start('localhost:50051')
+```
+
+## API
+
+### logger(options)
+
+#### options.fullName 
+
+To log full name (`fullName`) from context, otherwise logs just the `name`. Default: `false`.
+
+```js
+app.use(logger({ fullName: true }))
+```
+
+Output:
+
+```sh
+--> /routeguide.RouteGuide/GetFeature unary
+<-- /routeguide.RouteGuide/GetFeature unary 22ms
 ```
 
 ## Notes

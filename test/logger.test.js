@@ -64,14 +64,14 @@ test.serial('should log a simple request with correct function and type of unary
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    '/routeguide.RouteGuide/GetFeature',
+    'GetFeature',
     'unary'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
-    '/routeguide.RouteGuide/GetFeature',
+    'GetFeature',
     'unary',
     sinon.match.any))
 })
@@ -88,14 +88,14 @@ test.serial('should log an errorous request with correct function and type of un
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    '/routeguide.RouteGuide/GetFeature',
+    'GetFeature',
     'unary'))
 
   t.true(log.calledWith('  ' + chalk.red('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.red('%s'),
-    '/routeguide.RouteGuide/GetFeature',
+    'GetFeature',
     'unary',
     sinon.match.any))
 })
@@ -121,14 +121,14 @@ test.serial('should log request with correct function and type of response_strea
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    '/routeguide.RouteGuide/ListFeatures',
+    'ListFeatures',
     'response_stream'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
-    '/routeguide.RouteGuide/ListFeatures',
+    'ListFeatures',
     'response_stream',
     sinon.match.any))
 })
@@ -220,7 +220,7 @@ test.serial.cb('should log request with correct function and type of request_str
         t.true(log.calledWith('  ' + chalk.gray('-->') +
           ' ' + chalk.bold('%s') +
           ' ' + chalk.gray('%s'),
-          '/routeguide.RouteGuide/RecordRoute',
+          'RecordRoute',
           'request_stream'))
 
         // TODO this fails for some reason even though we see it
