@@ -27,7 +27,7 @@
     "test": "ava -v"
   },
   "dependencies": {
-    "chalk": "^1.1.3",
+    "chalk": "^2.3.0",
     "humanize-number": "0.0.2",
     "is-stream": "^1.1.0"
   },
