@@ -7,8 +7,10 @@
 const hl = require('highland')
 const JSONStream = require('JSONStream')
 const _ = require('lodash')
-const BB = require('bluebird')
-const fs = BB.promisifyAll(require('fs'))
+const pify = require('pify')
+const fs = require('fs')
+const readFile = pify(fs.readFile)
+const writeFile = pify(fs.writeFile)
 const path = require('path')
 const dbfile = path.join(__dirname, 'route_guide_db.json')
 const notesFile = path.join(__dirname, 'route_guide_db_notes.json')
@@ -65,7 +67,7 @@ async function getNote (key) {
 }
 
 async function putNote (key, value) {
-  const file = await fs.readFileAsync(notesFile, 'utf8')
+  const file = await readFile(notesFile, 'utf8')
   let all = file ? JSON.parse(file) : []
   if (!Array.isArray(all)) {
     console.warn('notes file is not an array')
@@ -79,7 +81,7 @@ async function putNote (key, value) {
     all.push(data)
   }
   const str = JSON.stringify(all)
-  await fs.writeFileAsync(notesFile, str)
+  await writeFile(notesFile, str)
   return value
 }
 

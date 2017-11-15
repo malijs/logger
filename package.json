@@ -35,21 +35,16 @@
     "JSONStream": "^1.2.1",
     "async": "^2.1.4",
     "async-to-gen": "^1.2.0",
-    "ava": "^0.18.0",
-    "babel-eslint": "^7.1.1",
-    "bluebird": "^3.4.6",
+    "ava": "^0.23.0",
     "grpc": "^1.0.1",
-    "grpc-caller": "^0.1.0",
+    "grpc-caller": "^0.3.0",
     "highland": "^3.0.0-beta.3",
     "lodash": "^4.17.2",
-    "mali": "~0.2.0",
-    "pify": "^2.3.0",
-    "sinon": "^1.17.6",
+    "mali": "~0.4.0",
+    "pify": "^3.0.0",
+    "sinon": "^4.1.0",
     "sprom": "^2.1.0",
-    "standard": "^9.0.2"
-  },
-  "standard": {
-    "parser": "babel-eslint"
+    "standard": "^10.0.0"
   },
   "ava": {
     "files": [
