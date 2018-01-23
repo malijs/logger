@@ -1,10 +1,9 @@
 
 # mali-logger
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/malijs/logger.svg)](https://greenkeeper.io/)
-
 [![npm version](https://img.shields.io/npm/v/mali-logger.svg?style=flat-square)](https://www.npmjs.com/package/mali-logger)
 [![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)](https://travis-ci.org/malijs/logger)
+[![Greenkeeper badge](https://badges.greenkeeper.io/malijs/logger.svg)](https://greenkeeper.io/)
 
 Development style logger middleware for [Mali](https://github.com/malijs/mali).
 
