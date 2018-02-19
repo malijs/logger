@@ -45,7 +45,7 @@
     "pify": "^3.0.0",
     "sinon": "^4.1.3",
     "sprom": "^3.0.0",
-    "standard": "^10.0.0"
+    "standard": "^11.0.0"
   },
   "ava": {
     "files": [
