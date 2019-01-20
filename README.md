@@ -1,9 +1,8 @@
 
-# mali-logger
+# @malijs/logger
 
-[![npm version](https://img.shields.io/npm/v/mali-logger.svg?style=flat-square)](https://www.npmjs.com/package/mali-logger)
-[![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)](https://travis-ci.org/malijs/logger)
-[![Greenkeeper badge](https://badges.greenkeeper.io/malijs/logger.svg)](https://greenkeeper.io/)
+[![npm version](https://img.shields.io/npm/v/@malijs/logger.svg?style=flat-square)](https://www.npmjs.com/package/@malijs/logger)
+[![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)]
 
 Development style logger middleware for [Mali](https://github.com/malijs/mali).
 
@@ -23,13 +22,13 @@ Development style logger middleware for [Mali](https://github.com/malijs/mali).
 ## Installation
 
 ```js
-$ npm install mali-logger
+$ npm install @malijs/logger
 ```
 
 ## Example
 
 ```js
-var logger = require('mali-logger')
+var logger = require('@malijs/logger')
 var Mali = require('mali')
 
 function sayHello (ctx) {

@@ -27,7 +27,7 @@ const PROTO_PATH = path.resolve(__dirname, './route_guide.proto')
 const HOSTPORT = getHostport()
 
 test.beforeEach(t => {
-  sandbox = sinon.sandbox.create()
+  sandbox = sinon.createSandbox()
   log = sandbox.spy(console, 'log')
 })
 
@@ -64,16 +64,16 @@ test.serial('should log a simple request with correct function and type of unary
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    'GetFeature',
-    'unary'))
+  'GetFeature',
+  'unary'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
-    'GetFeature',
-    'unary',
-    sinon.match.any))
+  'GetFeature',
+  'unary',
+  sinon.match.any))
 })
 
 test.serial('should log an errorous request with correct function and type of unary', async t => {
@@ -83,21 +83,21 @@ test.serial('should log an errorous request with correct function and type of un
     longitude: 333333
   }
 
-  await t.throws(client.getFeature(point1))
+  await t.throwsAsync(async () => client.getFeature(point1))
   t.true(log.calledTwice)
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    'GetFeature',
-    'unary'))
+  'GetFeature',
+  'unary'))
 
   t.true(log.calledWith('  ' + chalk.red('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.red('%s'),
-    'GetFeature',
-    'unary',
-    sinon.match.any))
+  'GetFeature',
+  'unary',
+  sinon.match.any))
 })
 
 test.serial('should log request with correct function and type of response_stream', async t => {
@@ -121,16 +121,16 @@ test.serial('should log request with correct function and type of response_strea
   t.true(log.calledWith('  ' + chalk.gray('-->') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s'),
-    'ListFeatures',
-    'response_stream'))
+  'ListFeatures',
+  'response_stream'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
-    'ListFeatures',
-    'response_stream',
-    sinon.match.any))
+  'ListFeatures',
+  'response_stream',
+  sinon.match.any))
 })
 
 test.serial.cb('should log request with correct function and type of duplex', t => {
@@ -141,16 +141,16 @@ test.serial.cb('should log request with correct function and type of duplex', t 
     t.true(log.calledWith('  ' + chalk.gray('-->') +
       ' ' + chalk.bold('%s') +
       ' ' + chalk.gray('%s'),
-      '/routeguide.RouteGuide/RouteChat',
-      'duplex'))
+    '/routeguide.RouteGuide/RouteChat',
+    'duplex'))
 
     t.true(log.calledWith('  ' + chalk.gray('<--') +
       ' ' + chalk.bold('%s') +
       ' ' + chalk.gray('%s') +
       ' ' + chalk.green('%s'),
-      '/routeguide.RouteGuide/RouteChat',
-      'duplex',
-      sinon.match.any))
+    '/routeguide.RouteGuide/RouteChat',
+    'duplex',
+    sinon.match.any))
 
     t.true(log.calledTwice)
 
@@ -191,11 +191,11 @@ test.serial.cb('should log request with correct function and type of duplex', t 
 
 test.serial.cb('should log request with correct function and type of request_stream', t => {
   fs.readFile(path.resolve(__dirname, './test_server/route_guide_db.json'), (err, data) => {
-    t.ifError(err)
+    t.falsy(err)
     const featureList = JSON.parse(data)
     const npoints = 10
     const call = client.recordRoute((err, stats) => {
-      t.ifError(err)
+      t.falsy(err)
     })
 
     function pointSender (lat, lng) {
@@ -220,8 +220,8 @@ test.serial.cb('should log request with correct function and type of request_str
         t.true(log.calledWith('  ' + chalk.gray('-->') +
           ' ' + chalk.bold('%s') +
           ' ' + chalk.gray('%s'),
-          'RecordRoute',
-          'request_stream'))
+        'RecordRoute',
+        'request_stream'))
 
         // TODO this fails for some reason even though we see it
         // t.true(log.calledTwice)

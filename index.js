@@ -4,14 +4,14 @@ const isStream = require('is-stream')
 
 /**
  * Development style logger middleware for Mali.
- * @module mali-logger
+ * @module @malijs/logger
  *
  * @param  {Object} options Options
  * @param  {Boolean} options.fullName To log full name from context, otherwise logs just the name.
  *                                    Default: <code>false</code>
  *
  * @example
- * const logger = require('mali-logger')
+ * const logger = require('@malijs/logger')
  * app.use(logger())
  */
 module.exports = function dev (options = {}) {
@@ -24,8 +24,8 @@ module.exports = function dev (options = {}) {
     console.log('  ' + chalk.gray('-->') +
       ' ' + chalk.bold('%s') +
       ' ' + chalk.gray('%s'),
-      options.fullName ? ctx.fullName : ctx.name,
-      ctx.type)
+    options.fullName ? ctx.fullName : ctx.name,
+    ctx.type)
 
     return next().then(() => {
       if (!isStream(ctx.res) || (ctx.type !== 'response_stream' && ctx.type !== 'duplex')) {
@@ -59,15 +59,15 @@ function log (options, ctx, start, err, event) {
 
   const upstream = err ? chalk.red('<--')
     : event === 'close' ? chalk.yellow('-x-')
-    : chalk.gray('<--')
+      : chalk.gray('<--')
 
   console.log('  ' + upstream +
     ' ' + chalk.bold('%s') +
     ' ' + chalk.gray('%s') +
     ' ' + chalk[color]('%s'),
-    options.fullName ? ctx.fullName : ctx.name,
-    ctx.type,
-    time(start))
+  options.fullName ? ctx.fullName : ctx.name,
+  ctx.type,
+  time(start))
 }
 
 function time (start) {
