@@ -54,5 +54,8 @@
     "require": [
       "async-to-gen/register"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
