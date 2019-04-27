@@ -12,6 +12,10 @@ const isStream = require('is-stream')
  * @param  {Boolean | Function} options.timestamp Enables or disables the inclusion of a timestamp in the log message.
  *                                                If a function is supplied, it is passed a `Date` timestamp and it must synchronously return the string representation to be logged.
  *                                                There are predefined timestamp functions: `epochTime` (default), `epochTime`, and `isoTime`.
+ * @param  {Boolean | Function} options.request Enables or disables the inclusion of request in the log message.
+ *                                              By default `JSON.stringify` is used. If a function is supplied it is passed the request from the context.
+ * @param  {Boolean | Function} options.response Enables or disables the inclusion of response in the log message.
+ *                                               By default `JSON.stringify` is used. If a function is supplied it is passed the response from the context.
  *
  * @example
  * const logger = require('@malijs/logger')
@@ -34,23 +38,40 @@ function logger (options = {}) {
     options.fullName = false
   }
 
-  if (typeof options.timestamp === 'boolean') {
+  if (options.timestamp === true) {
     options.timestamp = epochTime
   } else if (typeof options.timestamp !== 'function') {
-    options.timestamp = nullTime
+    options.timestamp = false
+  }
+
+  if (options.request === true) {
+    options.request = JSON.stringify
+  } else if (typeof options.request !== 'function') {
+    options.request = false
+  }
+
+  if (options.response === true) {
+    options.response = JSON.stringify
+  } else if (typeof options.response !== 'function') {
+    options.response = false
   }
 
   return function logger (ctx, next) {
     const start = new Date()
 
-    const timestamp = options.timestamp(start)
+    const timestamp = options.timestamp ? options.timestamp(start) : ''
+
+    const request = options.request ? options.request(ctx.req) : ''
 
     console.log(
       '  ' + chalk.gray('-->') +
-      chalk.cyan(timestamp ? ` ${timestamp}` : '') +
+      chalk.cyan('%s') +
       ' ' + chalk.bold('%s') +
+      '%s' +
       ' ' + chalk.gray('%s'),
+      timestamp ? ` ${timestamp}` : '',
       options.fullName ? ctx.fullName : ctx.name,
+      request ? ` ${request}` : '',
       ctx.type)
 
     return next().then(() => {
@@ -81,11 +102,6 @@ function logger (options = {}) {
 }
 
 /**
- * No timestamp.
- */
-const nullTime = () => ''
-
-/**
  * Milliseconds since Unix epoch (Default)
  */
 const epochTime = date => `${date.getTime()}`
@@ -100,7 +116,6 @@ const unixTime = date => `${Math.round(date.getTime() / 1000.0)}`
  */
 const isoTime = date => `${date.toISOString()}`
 
-logger.nullTime = nullTime
 logger.epochTime = epochTime
 logger.unixTime = unixTime
 logger.isoTime = isoTime
@@ -108,18 +123,23 @@ logger.isoTime = isoTime
 function log (options, ctx, start, err, event) {
   const color = err ? 'red' : 'green'
 
-  const timestamp = options.timestamp(start)
+  const timestamp = options.timestamp ? options.timestamp(start) : ''
+
+  const response = options.response ? options.response(ctx.res) : ''
 
   const upstream = err ? chalk.red('<--')
     : event === 'close' ? chalk.yellow('-x-')
       : chalk.gray('<--')
 
   console.log('  ' + upstream +
-    chalk.cyan(timestamp ? ` ${timestamp}` : '') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s') +
     ' ' + chalk[color]('%s'),
+  timestamp ? ` ${timestamp}` : '',
   options.fullName ? ctx.fullName : ctx.name,
+  response ? ` ${response}` : '',
   ctx.type,
   time(start))
 }

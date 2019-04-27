@@ -105,9 +105,56 @@ Output:
 <-- Fri Apr 26 2019 9:44:19 PM GetFeature unary 18ms
 ```
 
+#### options.request
+
+Enables or disables the inclusion of request in the log message.
+By default `JSON.stringify` is used. If a function is supplied it is passed the request from the context.
+
+```js
+app.use(logger({ request: true }))
+```
+
+Output:
+
+```
+--> GetFeature {"latitude":409146138,"longitude":-746188906} unary
+<-- GetFeature unary 2ms
+```
+
+#### options.response
+
+Enables or disables the inclusion of response in the log message.
+By default `JSON.stringify` is used. If a function is supplied it is passed the response from the context.
+
+```js
+app.use(logger({ response: true }))
+```
+
+Output:
+
+```
+--> GetFeature unary
+<-- GetFeature {"location":{"latitude":409146138,"longitude":-746188906},"name":"Berkshire Valley Management Area Trail, Jefferson, NJ, USA"} unary 3ms
+```
+
+With custom request and logging functions:
+
+```js
+app.use(logger({ 
+  request: req => `(${req.latitude}, ${req.longitude})`,
+  response: res => `[${res.name}]`
+}))
+```
+
+Output:
+
+```
+--> GetFeature (409146138, -746188906) unary
+<-- GetFeature [Berkshire Valley Management Area Trail, Jefferson, NJ, USA] unary 4ms
+```
+
 #### Timestamp functions
 
-- **logger.nullTime** - No timestamp. Used when `timestamp: false`.
 - **logger.epochTime** - Milliseconds since Unix epoch. Default. Used when `timestamp: true`.
 - **logger.unixTime** - Seconds since Unix epoch.
 - **logger.isoTime** - Timestamp in ISO time.
