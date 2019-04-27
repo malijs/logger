@@ -243,6 +243,51 @@ test.serial.cb('should log request with correct function and type of request_str
   })
 })
 
+test.serial('should log a simple request with default timestamp', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureEpoch(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
+
+test.serial('should log a simple request with unix timestamp', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureUnix(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
+
+test.serial('should log a simple request with ISO timestamp', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureIso(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
+
+test.serial('should log a simple request with custom timestamp', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureCustom(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
+
+
 test.after.always('guaranteed cleanup', async t => {
   await app.close()
   await pfs.truncate(notesPath, 0)

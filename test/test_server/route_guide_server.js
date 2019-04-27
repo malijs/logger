@@ -173,9 +173,18 @@ async function routeChat (ctx) {
 
 let app = new Mali(PROTO_PATH, 'RouteGuide')
 let log = logger()
-let log2 = logger({fullName: true})
+let log2 = logger({ fullName: true })
+let logTime = logger({ timestamp: true })
+let logUnix = logger({ timestamp: logger.unixTime })
+let logISO = logger({ timestamp: logger.isoTime })
+let logCustom = logger({ timestamp: date => `${date.toDateString()} ${date.toLocaleTimeString()}` })
+
 app.use({
   getFeature: [log, getFeature],
+  getFeatureEpoch: [logTime, getFeature],
+  getFeatureUnix: [logUnix, getFeature],
+  getFeatureISO: [logISO, getFeature],
+  getFeatureCustom: [logCustom, getFeature],
   listFeatures: [log, listFeatures],
   recordRoute: [log, recordRoute],
   routeChat: [log2, routeChat]

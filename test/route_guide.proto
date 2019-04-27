@@ -46,6 +46,14 @@ service RouteGuide {
   // position.
   rpc GetFeature(Point) returns (Feature) {}
 
+  rpc GetFeatureEpoch(Point) returns (Feature) {}
+
+  rpc GetFeatureUnix(Point) returns (Feature) {}
+
+  rpc GetFeatureISO(Point) returns (Feature) {}
+
+  rpc GetFeatureCustom(Point) returns (Feature) {}
+
   // A server-to-client streaming RPC.
   //
   // Obtains the Features available within the given Rectangle.  Results are

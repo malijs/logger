@@ -60,10 +60,61 @@ Output:
 <-- /routeguide.RouteGuide/GetFeature unary 22ms
 ```
 
+#### options.timestamp
+
+Enables or disables the inclusion of a timestamp in the log message.
+If a function is supplied, it is passed a `Date` timestamp and it must synchronously return the string representation to be logged.
+There are predefined timestamp functions: `epochTime` (default), `unixTime`, and `isoTime`.
+
+**Default timestamp**
+
+```js
+app.use(logger({timestamp: true}))
+```
+
+Output:
+
+```
+--> 1556325859071 GetFeature unary
+<-- 1556325859071 GetFeature unary 6ms
+```
+
+**With custom predefined timestamp**
+
+```js
+app.use(logger({timestamp: logger.isoTime}))
+```
+
+Output:
+
+```
+--> 2019-04-27T00:44:19.083Z GetFeature unary
+<-- 2019-04-27T00:44:19.083Z GetFeature unary 4ms
+```
+
+**With custom timestamp function**
+
+```js
+app.use(logger({ timestamp: date => `${date.toDateString()} ${date.toLocaleTimeString()}` }))
+```
+
+Output:
+
+```
+--> Fri Apr 26 2019 9:44:19 PM GetFeature unary
+<-- Fri Apr 26 2019 9:44:19 PM GetFeature unary 18ms
+```
+
+#### Timestamp functions
+
+- **logger.nullTime** - No timestamp. Used when `timestamp: false`.
+- **logger.epochTime** - Milliseconds since Unix epoch. Default. Used when `timestamp: true`.
+- **logger.unixTime** - Seconds since Unix epoch.
+- **logger.isoTime** - Timestamp in ISO time.
+
 ## Notes
 
-Recommended that you `.use()` this middleware near the top
-to "wrap" all subsequent middleware.
+Recommended that you `.use()` this middleware near the top to "wrap" all subsequent middleware.
 
 ## License
 
