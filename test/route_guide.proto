@@ -54,6 +54,12 @@ service RouteGuide {
 
   rpc GetFeatureCustom(Point) returns (Feature) {}
 
+  rpc GetFeatureReq(Point) returns (Feature) {}
+
+  rpc GetFeatureRes(Point) returns (Feature) {}
+
+  rpc GetFeatureReqResCustom(Point) returns (Feature) {}
+
   // A server-to-client streaming RPC.
   //
   // Obtains the Features available within the given Rectangle.  Results are

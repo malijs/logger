@@ -178,6 +178,12 @@ let logTime = logger({ timestamp: true })
 let logUnix = logger({ timestamp: logger.unixTime })
 let logISO = logger({ timestamp: logger.isoTime })
 let logCustom = logger({ timestamp: date => `${date.toDateString()} ${date.toLocaleTimeString()}` })
+let logReq = logger({ request: true })
+let logRes = logger({ response: true })
+let logReqResCustom = logger({
+  request: req => `(${req.latitude}, ${req.longitude})`,
+  response: res => `[${res.name}]`
+})
 
 app.use({
   getFeature: [log, getFeature],
@@ -187,7 +193,10 @@ app.use({
   getFeatureCustom: [logCustom, getFeature],
   listFeatures: [log, listFeatures],
   recordRoute: [log, recordRoute],
-  routeChat: [log2, routeChat]
+  routeChat: [log2, routeChat],
+  getFeatureReq: [logReq, getFeature],
+  getFeatureRes: [logRes, getFeature],
+  getFeatureReqResCustom: [logReqResCustom, getFeature]
 })
 
 module.exports = app

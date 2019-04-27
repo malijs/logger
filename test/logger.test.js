@@ -41,7 +41,7 @@ test.before(async t => {
   client = caller(HOSTPORT, PROTO_PATH, 'RouteGuide')
 })
 
-test.serial('should log a simple request', async t => {
+test.serial('should log a simple call', async t => {
   t.plan(2)
   const point1 = {
     latitude: 409146138,
@@ -52,7 +52,7 @@ test.serial('should log a simple request', async t => {
   t.true(log.called)
 })
 
-test.serial('should log a simple request with correct function and type of unary', async t => {
+test.serial('should log a simple call with correct function and type of unary', async t => {
   t.plan(4)
   const point1 = {
     latitude: 409146138,
@@ -62,16 +62,24 @@ test.serial('should log a simple request with correct function and type of unary
   t.truthy(response)
   t.true(log.calledTwice)
   t.true(log.calledWith('  ' + chalk.gray('-->') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s'),
+  '',
   'GetFeature',
+  '',
   'unary'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
+  '',
   'GetFeature',
+  '',
   'unary',
   sinon.match.any))
 })
@@ -86,16 +94,24 @@ test.serial('should log an errorous request with correct function and type of un
   await t.throwsAsync(async () => client.getFeature(point1))
   t.true(log.calledTwice)
   t.true(log.calledWith('  ' + chalk.gray('-->') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s'),
+  '',
   'GetFeature',
+  '',
   'unary'))
 
   t.true(log.calledWith('  ' + chalk.red('<--') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.red('%s'),
+  '',
   'GetFeature',
+  '',
   'unary',
   sinon.match.any))
 })
@@ -119,16 +135,24 @@ test.serial('should log request with correct function and type of response_strea
 
   t.true(log.calledTwice)
   t.true(log.calledWith('  ' + chalk.gray('-->') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s'),
+  '',
   'ListFeatures',
+  '',
   'response_stream'))
 
   t.true(log.calledWith('  ' + chalk.gray('<--') +
+    chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
+    '%s' +
     ' ' + chalk.gray('%s') +
     ' ' + chalk.green('%s'),
+  '',
   'ListFeatures',
+  '',
   'response_stream',
   sinon.match.any))
 })
@@ -139,16 +163,24 @@ test.serial.cb('should log request with correct function and type of duplex', t 
   call.on('data', _.noop)
   call.on('end', () => {
     t.true(log.calledWith('  ' + chalk.gray('-->') +
+      chalk.cyan('%s') +
       ' ' + chalk.bold('%s') +
+      '%s' +
       ' ' + chalk.gray('%s'),
+    '',
     '/routeguide.RouteGuide/RouteChat',
+    '',
     'duplex'))
 
     t.true(log.calledWith('  ' + chalk.gray('<--') +
+      chalk.cyan('%s') +
       ' ' + chalk.bold('%s') +
+      '%s' +
       ' ' + chalk.gray('%s') +
       ' ' + chalk.green('%s'),
+    '',
     '/routeguide.RouteGuide/RouteChat',
+    '',
     'duplex',
     sinon.match.any))
 
@@ -218,9 +250,13 @@ test.serial.cb('should log request with correct function and type of request_str
     call.on('finish', () => {
       process.nextTick(() => {
         t.true(log.calledWith('  ' + chalk.gray('-->') +
+          chalk.cyan('%s') +
           ' ' + chalk.bold('%s') +
+          '%s' +
           ' ' + chalk.gray('%s'),
+        '',
         'RecordRoute',
+        '',
         'request_stream'))
 
         // TODO this fails for some reason even though we see it
@@ -243,7 +279,7 @@ test.serial.cb('should log request with correct function and type of request_str
   })
 })
 
-test.serial('should log a simple request with default timestamp', async t => {
+test.serial('should log a simple call with default timestamp', async t => {
   t.plan(2)
   const point1 = {
     latitude: 409146138,
@@ -254,7 +290,7 @@ test.serial('should log a simple request with default timestamp', async t => {
   t.true(log.called)
 })
 
-test.serial('should log a simple request with unix timestamp', async t => {
+test.serial('should log a simple call with unix timestamp', async t => {
   t.plan(2)
   const point1 = {
     latitude: 409146138,
@@ -265,7 +301,7 @@ test.serial('should log a simple request with unix timestamp', async t => {
   t.true(log.called)
 })
 
-test.serial('should log a simple request with ISO timestamp', async t => {
+test.serial('should log a simple call with ISO timestamp', async t => {
   t.plan(2)
   const point1 = {
     latitude: 409146138,
@@ -276,7 +312,7 @@ test.serial('should log a simple request with ISO timestamp', async t => {
   t.true(log.called)
 })
 
-test.serial('should log a simple request with custom timestamp', async t => {
+test.serial('should log a simple call with custom timestamp', async t => {
   t.plan(2)
   const point1 = {
     latitude: 409146138,
@@ -287,6 +323,38 @@ test.serial('should log a simple request with custom timestamp', async t => {
   t.true(log.called)
 })
 
+test.serial('should log a simple call with request logging', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureReq(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
+
+test.serial('should log a simple call with response logging', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureRes(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
+
+test.serial('should log a simple call with custom request and response logging', async t => {
+  t.plan(2)
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
+  }
+  const response = await client.getFeatureReqResCustom(point1)
+  t.truthy(response)
+  t.true(log.called)
+})
 
 test.after.always('guaranteed cleanup', async t => {
   await app.close()
