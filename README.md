@@ -2,7 +2,7 @@
 # @malijs/logger
 
 [![npm version](https://img.shields.io/npm/v/@malijs/logger.svg?style=flat-square)](https://www.npmjs.com/package/@malijs/logger)
-[![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)]
+[![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)](https://travis-ci.org/malijs/logger)
 
 Development style logger middleware for [Mali](https://github.com/malijs/mali).
 
