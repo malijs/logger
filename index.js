@@ -1,4 +1,4 @@
-const humanize = require('humanize-number')
+const { humanizeNumber } = require('./helpers')
 const chalk = require('chalk')
 const isStream = require('is-stream')
 
@@ -146,7 +146,7 @@ function log (options, ctx, start, err, event) {
 
 function time (start) {
   const delta = new Date() - start
-  return humanize(delta < 10000
+  return humanizeNumber(delta < 10000
     ? delta + 'ms'
     : Math.round(delta / 1000) + 's')
 }

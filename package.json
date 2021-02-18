@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "humanize-number": "0.0.2",
     "is-stream": "^2.0.0"
   },
   "devDependencies": {
