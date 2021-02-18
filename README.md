@@ -2,7 +2,7 @@
 # @malijs/logger
 
 [![npm version](https://img.shields.io/npm/v/@malijs/logger.svg?style=flat-square)](https://www.npmjs.com/package/@malijs/logger)
-[![build status](https://img.shields.io/travis/malijs/logger/master.svg?style=flat-square)](https://travis-ci.org/malijs/logger)
+![Tests](https://github.com/malijs/logger/workflows/Tests/badge.svg)
 
 Development style logger middleware for [Mali](https://github.com/malijs/mali).
 
@@ -28,17 +28,15 @@ $ npm install @malijs/logger
 ## Example
 
 ```js
-var logger = require('@malijs/logger')
-var Mali = require('mali')
-
-function sayHello (ctx) {
-  ctx.res = { message: 'Hello ' + ctx.req.name }
-}
+import logger from '@malijs/logger'
+import Mali from 'mali'
 
 const app = new Mali(path.resolve(__dirname, './helloworld.proto'), 'Greeter')
 app.use(logger())
-app.use({ sayHello })
-app.start('localhost:50051')
+app.use({
+  sayHello: ({ res, req }) => (res = `Hello ${req.name}`)
+})
+app.start('0.0.0.0:50051')
 ```
 
 ## API
