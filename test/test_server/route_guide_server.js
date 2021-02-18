@@ -2,7 +2,6 @@ const path = require('path')
 const hl = require('highland')
 const _ = require('lodash')
 const Mali = require('mali')
-const BB = require('bluebird')
 
 const logger = require('../../')
 const db = require('./feature_db')
@@ -74,7 +73,7 @@ async function statsMapper (point) {
 
 // to be used because we don't have highland asyncWrapper
 function statsMappedCb (point, fn) {
-  BB.resolve(statsMapper(point)).asCallback(fn)
+  Promise.resolve(statsMapper(point)).then(fn)
 }
 
 /**
@@ -150,7 +149,7 @@ async function handleNote (ctx, note) {
 }
 
 function handleNoteCb (ctx, note, fn) {
-  BB.resolve(handleNote(ctx, note)).asCallback(fn)
+  Promise.resolve(handleNote(ctx, note)).asCallback(fn)
 }
 
 /**

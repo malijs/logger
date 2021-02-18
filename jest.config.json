@@ -1,0 +1,14 @@
+{
+  "testEnvironment": "node",
+  "collectCoverage": true,
+  "coverageProvider": "v8",
+  "coverageReporters": [
+    "json",
+    "lcov",
+    "text",
+    "clover"
+  ],
+  "collectCoverageFrom": [
+    "index.js"
+  ]
+}

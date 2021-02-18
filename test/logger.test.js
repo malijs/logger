@@ -1,17 +1,16 @@
-import test from 'ava'
-import path from 'path'
-import pify from 'pify'
-import caller from 'grpc-caller'
-import sinon from 'sinon'
-import sprom from 'sprom'
-import _ from 'lodash'
-import fs from 'fs'
-import async from 'async'
+// const test = require('ava')
+const path = require('path')
+const sinon = require('sinon')
+const sprom = require('sprom')
+const fs = require('fs')
+const pify = require('pify')
 const pfs = pify(fs)
+const createClient = require('./grpc_client')
 
 // test subjects
 const chalk = require('chalk')
 const app = require('./test_server/route_guide_server')
+const { expectation } = require('sinon')
 const notesPath = path.resolve(__dirname, './test_server/route_guide_db_notes.json')
 let log, sandbox, client
 
@@ -26,98 +25,114 @@ function getHostport (port) {
 const PROTO_PATH = path.resolve(__dirname, './route_guide.proto')
 const HOSTPORT = getHostport()
 
-test.beforeEach(t => {
+beforeEach((done) => {
   sandbox = sinon.createSandbox()
   log = sandbox.spy(console, 'log')
+  done()
 })
 
-test.afterEach(t => {
+afterEach((done) => {
   sandbox.restore()
+  done()
 })
 
-test.before(async t => {
+beforeAll(async (done) => {
   await pfs.truncate(notesPath, 0)
   await app.start(HOSTPORT)
-  client = caller(HOSTPORT, PROTO_PATH, 'RouteGuide')
+  client = createClient(HOSTPORT, PROTO_PATH, 'RouteGuide', 'routeguide')
+  done()
 })
 
-test.serial('should log a simple call', async t => {
-  t.plan(2)
+afterAll(async (done) => {
+  await app.close()
+  await pfs.truncate(notesPath, 0)
+  done()
+})
+
+
+test('should log a simple call', (done) => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeature(point1)
-  t.truthy(response)
-  t.true(log.called)
+  client.getFeature(point1, (error, response) => {
+    expect(error).toBeNull()
+    expect(response).toBeTruthy()
+    expect(log.called).toBeTruthy()
+    done()
+  })
 })
 
-test.serial('should log a simple call with correct function and type of unary', async t => {
-  t.plan(4)
+test('should log a simple call with correct function and type of unary', (done) => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeature(point1)
-  t.truthy(response)
-  t.true(log.calledTwice)
-  t.true(log.calledWith('  ' + chalk.gray('-->') +
-    chalk.cyan('%s') +
-    ' ' + chalk.bold('%s') +
-    '%s' +
-    ' ' + chalk.gray('%s'),
-  '',
-  'GetFeature',
-  '',
-  'unary'))
+  client.getFeature(point1, (error, response) => {
+    expect(error).toBeNull()
+    expect(response).toBeDefined()
+    expect(log.calledTwice).toBeTruthy()
+    expect(log.calledWith('  ' + chalk.gray('-->') +
+      chalk.cyan('%s') +
+      ' ' + chalk.bold('%s') +
+      '%s' +
+      ' ' + chalk.gray('%s'),
+    '',
+    'GetFeature',
+    '',
+    'unary')).toBeTruthy()
 
-  t.true(log.calledWith('  ' + chalk.gray('<--') +
-    chalk.cyan('%s') +
-    ' ' + chalk.bold('%s') +
-    '%s' +
-    ' ' + chalk.gray('%s') +
-    ' ' + chalk.green('%s'),
-  '',
-  'GetFeature',
-  '',
-  'unary',
-  sinon.match.any))
+    expect(log.calledWith('  ' + chalk.gray('<--') +
+      chalk.cyan('%s') +
+      ' ' + chalk.bold('%s') +
+      '%s' +
+      ' ' + chalk.gray('%s') +
+      ' ' + chalk.green('%s'),
+    '',
+    'GetFeature',
+    '',
+    'unary',
+    sinon.match.any)).toBeTruthy()
+    done()
+  })
 })
 
-test.serial('should log an errorous request with correct function and type of unary', async t => {
-  t.plan(4)
+test('should log an errorous request with correct function and type of unary', async (done) => {
   const point1 = {
     latitude: 333333,
     longitude: 333333
   }
 
-  await t.throwsAsync(async () => client.getFeature(point1))
-  t.true(log.calledTwice)
-  t.true(log.calledWith('  ' + chalk.gray('-->') +
-    chalk.cyan('%s') +
-    ' ' + chalk.bold('%s') +
-    '%s' +
-    ' ' + chalk.gray('%s'),
-  '',
-  'GetFeature',
-  '',
-  'unary'))
+  client.getFeature(point1, (error, response) => {
+    expect(error).toBeDefined()
+    expect(response).toBeUndefined()
+    expect(log.calledTwice).toBeTruthy()
+    expect(log.calledWith('  ' + chalk.gray('-->') +
+      chalk.cyan('%s') +
+      ' ' + chalk.bold('%s') +
+      '%s' +
+      ' ' + chalk.gray('%s'),
+    '',
+    'GetFeature',
+    '',
+    'unary')).toBeTruthy()
 
-  t.true(log.calledWith('  ' + chalk.red('<--') +
-    chalk.cyan('%s') +
-    ' ' + chalk.bold('%s') +
-    '%s' +
-    ' ' + chalk.gray('%s') +
-    ' ' + chalk.red('%s'),
-  '',
-  'GetFeature',
-  '',
-  'unary',
-  sinon.match.any))
+    expect(log.calledWith('  ' + chalk.red('<--') +
+      chalk.cyan('%s') +
+      ' ' + chalk.bold('%s') +
+      '%s' +
+      ' ' + chalk.gray('%s') +
+      ' ' + chalk.red('%s'),
+    '',
+    'GetFeature',
+    '',
+    'unary',
+    sinon.match.any)).toBeTruthy()
+    done()
+  })
 })
 
-test.serial('should log request with correct function and type of response_stream', async t => {
-  t.plan(4)
+test('should log request with correct function and type of response_stream', async (done) => {
   const rectangle = {
     lo: {
       latitude: 400000000,
@@ -129,12 +144,10 @@ test.serial('should log request with correct function and type of response_strea
     }
   }
 
-  const stream = await client.listFeatures(rectangle)
-  t.truthy(stream)
+  const stream = client.listFeatures(rectangle)
   await sprom(stream)
 
-  t.true(log.calledTwice)
-  t.true(log.calledWith('  ' + chalk.gray('-->') +
+  expect(log.calledWith('  ' + chalk.gray('-->') +
     chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
     '%s' +
@@ -142,9 +155,8 @@ test.serial('should log request with correct function and type of response_strea
   '',
   'ListFeatures',
   '',
-  'response_stream'))
-
-  t.true(log.calledWith('  ' + chalk.gray('<--') +
+  'response_stream')).toBeTruthy()
+  expect(log.calledWith('  ' + chalk.gray('<--') +
     chalk.cyan('%s') +
     ' ' + chalk.bold('%s') +
     '%s' +
@@ -154,209 +166,98 @@ test.serial('should log request with correct function and type of response_strea
   'ListFeatures',
   '',
   'response_stream',
-  sinon.match.any))
+  sinon.match.any)).toBeTruthy()
+
+  done()
 })
 
-test.serial.cb('should log request with correct function and type of duplex', t => {
-  const call = client.routeChat()
-  t.truthy(call)
-  call.on('data', _.noop)
-  call.on('end', () => {
-    t.true(log.calledWith('  ' + chalk.gray('-->') +
-      chalk.cyan('%s') +
-      ' ' + chalk.bold('%s') +
-      '%s' +
-      ' ' + chalk.gray('%s'),
-    '',
-    '/routeguide.RouteGuide/RouteChat',
-    '',
-    'duplex'))
-
-    t.true(log.calledWith('  ' + chalk.gray('<--') +
-      chalk.cyan('%s') +
-      ' ' + chalk.bold('%s') +
-      '%s' +
-      ' ' + chalk.gray('%s') +
-      ' ' + chalk.green('%s'),
-    '',
-    '/routeguide.RouteGuide/RouteChat',
-    '',
-    'duplex',
-    sinon.match.any))
-
-    t.true(log.calledTwice)
-
-    t.end()
-  })
-
-  const notes = [{
-    location: {
-      latitude: 0,
-      longitude: 0
-    },
-    message: 'First message'
-  }, {
-    location: {
-      latitude: 0,
-      longitude: 1
-    },
-    message: 'Second message'
-  }, {
-    location: {
-      latitude: 1,
-      longitude: 0
-    },
-    message: 'Third message'
-  }, {
-    location: {
-      latitude: 0,
-      longitude: 0
-    },
-    message: 'Fourth message'
-  }]
-  for (let i = 0; i < notes.length; i++) {
-    const note = notes[i]
-    call.write(note)
+test('should log a simple call with default timestamp', (done) => {
+  const point1 = {
+    latitude: 409146138,
+    longitude: -746188906
   }
-  call.end()
-})
-
-test.serial.cb('should log request with correct function and type of request_stream', t => {
-  fs.readFile(path.resolve(__dirname, './test_server/route_guide_db.json'), (err, data) => {
-    t.falsy(err)
-    const featureList = JSON.parse(data)
-    const npoints = 10
-    const call = client.recordRoute((err, stats) => {
-      t.falsy(err)
-    })
-
-    function pointSender (lat, lng) {
-      return function (callback) {
-        call.write({
-          latitude: lat,
-          longitude: lng
-        })
-        _.delay(callback, _.random(500, 1500))
-      }
-    }
-
-    const pointSenders = []
-    for (let i = 0; i < npoints; i++) {
-      let randPoint = featureList[_.random(0, featureList.length - 1)]
-      pointSenders[i] = pointSender(randPoint.location.latitude,
-        randPoint.location.longitude)
-    }
-
-    call.on('finish', () => {
-      process.nextTick(() => {
-        t.true(log.calledWith('  ' + chalk.gray('-->') +
-          chalk.cyan('%s') +
-          ' ' + chalk.bold('%s') +
-          '%s' +
-          ' ' + chalk.gray('%s'),
-        '',
-        'RecordRoute',
-        '',
-        'request_stream'))
-
-        // TODO this fails for some reason even though we see it
-        // t.true(log.calledTwice)
-        // t.true(log.calledWith('  ' + chalk.gray('<--') +
-        //     ' ' + chalk.bold('%s') +
-        //     ' ' + chalk.gray('%s') +
-        //     ' ' + chalk.green('%s'),
-        //     'recordRoute',
-        //     'request_stream',
-        //     sinon.match.any))
-
-        t.end()
-      })
-    })
-
-    async.series(pointSenders, () => {
-      call.end()
-    })
+  client.getFeatureEpoch(point1, (error, response) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
   })
 })
 
-test.serial('should log a simple call with default timestamp', async t => {
-  t.plan(2)
+test('should log a simple call with unix timestamp', done => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeatureEpoch(point1)
-  t.truthy(response)
-  t.true(log.called)
+  client.getFeatureUnix(point1, (error, response ) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
+  })
 })
 
-test.serial('should log a simple call with unix timestamp', async t => {
-  t.plan(2)
+test('should log a simple call with ISO timestamp', done => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeatureUnix(point1)
-  t.truthy(response)
-  t.true(log.called)
+  client.getFeatureIso(point1, (error, response) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
+  })
 })
 
-test.serial('should log a simple call with ISO timestamp', async t => {
-  t.plan(2)
+test('should log a simple call with custom timestamp', done => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeatureIso(point1)
-  t.truthy(response)
-  t.true(log.called)
+  client.getFeatureCustom(point1, (error, response) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
+  })
 })
 
-test.serial('should log a simple call with custom timestamp', async t => {
-  t.plan(2)
+test('should log a simple call with request logging', done => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeatureCustom(point1)
-  t.truthy(response)
-  t.true(log.called)
+  client.getFeatureReq(point1, (error, response) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
+  })
 })
 
-test.serial('should log a simple call with request logging', async t => {
-  t.plan(2)
+test('should log a simple call with response logging', done => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeatureReq(point1)
-  t.truthy(response)
-  t.true(log.called)
+  client.getFeatureRes(point1, (error, response) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
+  })
 })
 
-test.serial('should log a simple call with response logging', async t => {
-  t.plan(2)
+test('should log a simple call with custom request and response logging', done => {
   const point1 = {
     latitude: 409146138,
     longitude: -746188906
   }
-  const response = await client.getFeatureRes(point1)
-  t.truthy(response)
-  t.true(log.called)
-})
-
-test.serial('should log a simple call with custom request and response logging', async t => {
-  t.plan(2)
-  const point1 = {
-    latitude: 409146138,
-    longitude: -746188906
-  }
-  const response = await client.getFeatureReqResCustom(point1)
-  t.truthy(response)
-  t.true(log.called)
-})
-
-test.after.always('guaranteed cleanup', async t => {
-  await app.close()
-  await pfs.truncate(notesPath, 0)
+  client.getFeatureReqResCustom(point1, (error, response) => {
+    expect(error).toBeFalsy()
+    expect(response).toBeTruthy()
+    expect(log.called).toEqual(true)
+    done()
+  })
 })
